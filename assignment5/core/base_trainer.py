@@ -86,14 +86,17 @@ class BaseTrainer:
 
         if self.discrete:  # Please use categorical distribution.
             logits, values = self.model(obs)
-            pass
+            dist = Categorical(logits)
+            actions = dist.sample()
+            action_log_probs = dist.log_prob(actions)
 
             actions = actions.view(-1, 1)  # In discrete case only return the chosen action.
 
         else:  # Please use normal distribution. You should
             means, log_std, values = self.model(obs)
-            pass
-
+            dist = torch.distributions.Normal(means,torch.exp(log_std))
+            actions = dist.sample()
+            action_log_probs = dist.log_prob(actions)
             actions = actions.view(-1, self.num_actions)
 
         values = values.view(-1, 1)
