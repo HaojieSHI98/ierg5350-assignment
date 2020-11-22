@@ -87,20 +87,23 @@ class BaseTrainer:
 
         if self.discrete:  # Please use categorical distribution.
             logits, values = self.model(obs)
-            dist = Categorical(torch.exp(logits))
+            dist = Categorical(logits=logits)
             # print('logits:',logits)
-            actions = dist.sample()
-            action_log_probs = dist.log_prob(actions)
-            # print('action_log',action_log_probs)
-            # print('actions',actions)
+            # actions = dist.sample()
+            # action_log_probs = dist.log_prob(actions)
+            if deterministic:
+                actions = dist.probs.argmax(dim=1, keepdim=True)
+            else:
+                actions = dist.sample()
+            action_log_probs = dist.log_prob(actions.view(-1))
             actions = actions.view(-1, 1)  # In discrete case only return the chosen action.
-            action_log_probs = action_log_probs.view(-1, 1)
+            # action_log_probs = action_log_probs.view(-1, 1)
         else:  # Please use normal distribution. You should
             means, log_std, values = self.model(obs)
-            dist = torch.distributions.Normal(means,torch.exp(log_std))
+            dist = torch.distributions.Normal(loc=means,scale=torch.exp(log_std))
             actions = dist.sample()
-            action_log_probs = dist.log_prob(actions).sum(axis=1)
             actions = actions.view(-1, self.num_actions)
+            action_log_probs = dist.log_prob(actions).sum(axis=1)
 
         values = values.view(-1, 1)
         action_log_probs = action_log_probs.view(-1, 1)

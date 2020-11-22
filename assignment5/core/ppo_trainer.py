@@ -96,7 +96,7 @@ class PPOTrainer(BaseTrainer):
         # pass
 
         # [TODO] Implement value loss
-        value_loss = torch.mean((values - return_batch).pow(2))
+        value_loss = F.mse_loss(return_batch,values)
         # pass
 
         # This is the total loss
