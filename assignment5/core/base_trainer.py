@@ -71,7 +71,7 @@ class BaseTrainer:
         # Change to tensor, change type, add batch dimension for observation.
         if not isinstance(obs, torch.Tensor):
             obs = np.asarray(obs)
-            print(obs)
+            # print(obs)
             obs = torch.from_numpy(obs.astype(np.float32)).to(self.device)
         obs = obs.float()
         if obs.ndim == 1 or obs.ndim == 3:  # Add additional batch dimension.
@@ -87,22 +87,24 @@ class BaseTrainer:
 
         if self.discrete:  # Please use categorical distribution.
             logits, values = self.model(obs)
-            dist = Categorical(logits)
+            dist = Categorical(torch.exp(logits))
+            # print('logits:',logits)
             actions = dist.sample()
             action_log_probs = dist.log_prob(actions)
-
+            # print('action_log',action_log_probs)
+            # print('actions',actions)
             actions = actions.view(-1, 1)  # In discrete case only return the chosen action.
-
+            action_log_probs = action_log_probs.view(-1, 1)
         else:  # Please use normal distribution. You should
             means, log_std, values = self.model(obs)
             dist = torch.distributions.Normal(means,torch.exp(log_std))
             actions = dist.sample()
-            action_log_probs = dist.log_prob(actions)
+            action_log_probs = dist.log_prob(actions).sum(axis=1)
             actions = actions.view(-1, self.num_actions)
 
         values = values.view(-1, 1)
         action_log_probs = action_log_probs.view(-1, 1)
-
+        # print('value',values.size(),'actions',actions.size(),'action_log',action_log_probs.size())
         return values, actions, action_log_probs
 
     def evaluate_actions(self, obs, act):
