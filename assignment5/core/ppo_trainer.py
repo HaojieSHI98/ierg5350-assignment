@@ -87,7 +87,7 @@ class PPOTrainer(BaseTrainer):
         assert dist_entropy.requires_grad
 
         # [TODO] Implement policy loss
-        ratio = torch.exp(action_log_probs - old_action_log_probs_batch.detach()).squeeze(1)
+        ratio = torch.exp(action_log_probs - old_action_log_probs_batch)
         rt_clip = torch.clamp(ratio, min=1 - self.clip_param, max=1 + self.clip_param)
         loss1 = ratio * adv_targ
         loss2 = rt_clip * adv_targ
