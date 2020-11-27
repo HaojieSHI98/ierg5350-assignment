@@ -33,8 +33,8 @@ def my_policy_SID(num_envs=1):
     """
     # [TODO] rewrite this function
     # [TODO] CAUTION! PLEASE CHANGE THE NAME OF THIS FUNCTION!!! Otherwise our program can't find your agent!
-    my_agent_log_dir = None
-    my_agent_suffix = None
+    my_agent_log_dir = "data/cCarRacing-v0_PPO_11-27_01-57"
+    my_agent_suffix = "iter4000"
 
     # checkpoint_path = osp.join(my_agent_log_dir, "checkpoint-{}.pkl".format(my_agent_suffix))
     # if not osp.exists(checkpoint_path):
@@ -54,7 +54,7 @@ def my_policy_zhenghao(num_envs=1):
     return PolicyAPI("cCarRacing-v0", num_envs=num_envs, log_dir="data/alphacar", suffix="zhenghao")
 
 
-def my_policy_alphacar(num_envs=1):
+def my_policy_1155156694(num_envs=1):
     return PolicyAPI("cCarRacing-v0", num_envs=num_envs, log_dir="data/alphacar", suffix="alphacar")
 
 
